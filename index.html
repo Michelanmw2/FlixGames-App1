@@ -1,32 +1,29 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FlixGames</title>
+<button id="instalarApp" style="display:none;">
+📥 Instalar Aplicativo
+</button>
 
-<link rel="manifest" href="/manifest.webmanifest">
-<meta name="theme-color" content="#050b14">
+<script>
+let deferredPrompt = null;
 
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background: #050b14;
-  overflow: hidden;
-}
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
 
-iframe {
-  width: 100%;
-  height: 100vh;
-  border: none;
-}
-</style>
-</head>
+    document.getElementById('instalarApp').style.display = 'inline-block';
+});
 
-<body>
-<iframe src="https://www.flixgames.com.br/"></iframe>
-</body>
-</html>
+document.getElementById('instalarApp').addEventListener('click', async () => {
+
+    if (!deferredPrompt) {
+        alert("A instalação ainda não está disponível neste navegador.");
+        return;
+    }
+
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    deferredPrompt = null;
+
+});
+</script>

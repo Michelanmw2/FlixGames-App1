@@ -7,6 +7,14 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#050b14">
 
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8ETBY4WFPH"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-8ETBY4WFPH');
+</script>
+
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#050b14;font-family:'Segoe UI',Arial,sans-serif;}
 iframe{position:fixed;inset:0;width:100%;height:100%;border:none;display:none;}
@@ -58,9 +66,20 @@ const statusBox = document.getElementById("status");
 
 let deferredPrompt = null;
 
+function enviarEvento(nome, parametros){
+  if (typeof gtag === "function") {
+    gtag("event", nome, parametros || {});
+  }
+}
+
 function abrirLoja(){
   tela.style.display = "none";
   frame.style.display = "block";
+
+  enviarEvento("app_aberto", {
+    app_name: "FlixGames PWA",
+    origem: estaNoApp() ? "app_instalado" : "navegador"
+  });
 }
 
 function estaNoApp(){
@@ -71,17 +90,14 @@ function estaNoApp(){
   );
 }
 
-/* SE JÁ ABRIU PELO APP INSTALADO, NÃO MOSTRA INSTALAÇÃO */
 if (estaNoApp()) {
   abrirLoja();
 }
 
-/* SERVICE WORKER */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
 }
 
-/* BOTÃO OFICIAL DE INSTALAÇÃO */
 window.addEventListener("beforeinstallprompt", function(e){
   e.preventDefault();
   deferredPrompt = e;
@@ -90,6 +106,11 @@ window.addEventListener("beforeinstallprompt", function(e){
 });
 
 btnInstall.addEventListener("click", async function(){
+  enviarEvento("clicou_instalar_app", {
+    app_name: "FlixGames PWA",
+    platform: "Windows"
+  });
+
   if (!deferredPrompt) {
     alert("A instalação ainda não está disponível. Use Google Chrome ou Microsoft Edge.");
     return;
@@ -109,9 +130,20 @@ btnInstall.addEventListener("click", async function(){
   deferredPrompt = null;
 });
 
-btnAbrir.addEventListener("click", abrirLoja);
+btnAbrir.addEventListener("click", function(){
+  enviarEvento("abriu_sem_instalar", {
+    app_name: "FlixGames PWA"
+  });
+
+  abrirLoja();
+});
 
 window.addEventListener("appinstalled", function(){
+  enviarEvento("app_instalado", {
+    app_name: "FlixGames PWA",
+    platform: "Windows"
+  });
+
   abrirLoja();
 });
 

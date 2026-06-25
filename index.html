@@ -8,12 +8,25 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#050b14">
 
-<script>
-window.location.href = "https://www.flixgames.com.br/";
-</script>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #050b14;
+  overflow: hidden;
+}
 
+iframe {
+  width: 100%;
+  height: 100vh;
+  border: none;
+}
+</style>
 </head>
-<body style="margin:0;background:#050b14;color:white;font-family:Arial;text-align:center;padding:40px;">
-  <h2>Carregando FlixGames...</h2>
+
+<body>
+<iframe src="https://www.flixgames.com.br/"></iframe>
 </body>
 </html>

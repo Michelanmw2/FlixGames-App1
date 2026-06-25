@@ -220,128 +220,71 @@ src="https://www.flixgames.com.br">
 </iframe>
 
 <script>
+const tela = document.getElementById("installScreen");
+const frame = document.getElementById("site");
+const btnInstall = document.getElementById("btnInstall");
+const btnAbrir = document.getElementById("btnAbrir");
+const status = document.getElementById("status");
 
-const tela=document.getElementById("installScreen");
-
-const frame=document.getElementById("site");
+let deferredPrompt = null;
+const modoInstalar = new URLSearchParams(window.location.search).get("install") === "1";
 
 function abrirLoja(){
-
-tela.style.display="none";
-
-frame.style.display="block";
-
+  tela.style.display = "none";
+  frame.style.display = "block";
 }
 
-/* ===========================
-   JÁ ESTÁ INSTALADO?
-=========================== */
-
-if(
-
-window.matchMedia('(display-mode: standalone)').matches ||
-
-window.matchMedia('(display-mode: window-controls-overlay)').matches ||
-
-window.navigator.standalone
-
+if (
+  !modoInstalar &&
+  (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+    window.navigator.standalone
+  )
 ){
-
-abrirLoja();
-
+  abrirLoja();
 }
-
-/* ===========================
-   SERVICE WORKER
-=========================== */
 
 if('serviceWorker' in navigator){
-
-navigator.serviceWorker.register('/service-worker.js');
-
+  navigator.serviceWorker.register('/service-worker.js');
 }
 
-/* ===========================
-   INSTALAÇÃO
-=========================== */
-
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt',function(e){
-
-e.preventDefault();
-
-deferredPrompt=e;
-
-btnInstall.style.display='block';
-
-status.innerHTML='Clique em Instalar Aplicativo.';
-
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  btnInstall.style.display = 'block';
+  status.innerHTML = 'Clique em Instalar Aplicativo para abrir a instalação.';
 });
 
-btnInstall.onclick=async()=>{
+btnInstall.onclick = async function(){
+  if(!deferredPrompt){
+    alert("A instalação ainda não está disponível. Use Google Chrome ou Microsoft Edge.");
+    return;
+  }
 
-if(!deferredPrompt){
+  deferredPrompt.prompt();
 
-alert("Seu navegador não permite instalação automática.");
+  const escolha = await deferredPrompt.userChoice;
+  deferredPrompt = null;
 
-return;
+  if(escolha.outcome === "accepted"){
+    status.innerHTML = "Aplicativo instalado com sucesso!";
+    setTimeout(abrirLoja, 1200);
+  } else {
+    status.innerHTML = "Instalação cancelada. Você pode tentar novamente pela barra do navegador.";
+  }
+};
 
-}
+btnAbrir.onclick = abrirLoja;
 
-deferredPrompt.prompt();
-
-const {outcome}=await deferredPrompt.userChoice;
-
-deferredPrompt=null;
-
-if(outcome==="accepted"){
-
-status.innerHTML="Aplicativo instalado!";
-
-setTimeout(()=>{
-
-abrirLoja();
-
-},1200);
-
-}
-
-}
-
-window.addEventListener('appinstalled',()=>{
-
-abrirLoja();
-
+window.addEventListener('appinstalled', function(){
+  localStorage.setItem("flixAppInstalado", "1");
+  abrirLoja();
 });
 
-/* ===========================
-   BOTÃO ABRIR
-=========================== */
-
-btnAbrir.onclick=()=>{
-
-abrirLoja();
-
-}
-
-/* ===========================
-   SE NÃO HOUVER SUPORTE
-=========================== */
-
-setTimeout(()=>{
-
-if(btnInstall.style.display=="none"){
-
-status.innerHTML="Se o botão não aparecer, utilize Google Chrome ou Microsoft Edge.";
-
-}
-
-},3000);
-
+setTimeout(function(){
+  if(btnInstall.style.display === "none"){
+    status.innerHTML = "Se o botão de instalar não aparecer, clique no ícone de instalação na barra do Chrome/Edge.";
+  }
+}, 5000);
 </script>
-
-</body>
-
-</html>
-```

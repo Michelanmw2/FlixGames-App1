@@ -220,8 +220,14 @@ btnAbrir.addEventListener("click", function(){
 
 /* Evento após instalação */
 window.addEventListener("appinstalled", function(){
-  localStorage.setItem("flixAppInstalado", "1");
-  abrirLoja();
+
+    localStorage.setItem("flixAppInstalado","1");
+
+    /* grava um cookie por 10 anos */
+    document.cookie = "flixAppInstalado=1; max-age=315360000; path=/";
+
+    abrirLoja();
+
 });
 
 /* Se veio do botão do site, mantém tela de instalação */

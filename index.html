@@ -8,131 +8,22 @@
 <meta name="theme-color" content="#050b14">
 
 <style>
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#050b14;
-  font-family:'Segoe UI',Arial,sans-serif;
-}
-
-#splashScreen{
-  position:fixed;
-  inset:0;
-  background:#050b14;
-  z-index:999999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  opacity:1;
-  transition:opacity .6s ease;
-}
-
-#splashVideo{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:#050b14;
-}
-
-iframe{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-  display:none;
-}
-
-#installScreen{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#050b14,#07111f);
-  z-index:99999;
-  padding:24px;
-  box-sizing:border-box;
-}
-
-.card{
-  width:100%;
-  max-width:520px;
-  background:#07111f;
-  border:2px solid #1d8cff;
-  border-radius:24px;
-  padding:34px 28px;
-  text-align:center;
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
-}
-
-.logo{
-  max-width:210px;
-  margin-bottom:24px;
-}
-
-h1{
-  color:#fff;
-  font-size:32px;
-  margin:0 0 14px;
-  font-weight:900;
-}
-
-p{
-  color:#bfd9ff;
-  font-size:18px;
-  line-height:1.6;
-  margin:0 0 22px;
-}
-
-.lista{
-  display:inline-block;
-  text-align:left;
-  color:#fff;
-  font-size:18px;
-  line-height:2;
-  margin:18px 0 26px;
-}
-
-button{
-  width:100%;
-  padding:17px;
-  border:none;
-  border-radius:14px;
-  cursor:pointer;
-  font-size:19px;
-  font-weight:900;
-  margin-top:12px;
-}
-
-#btnInstall{
-  display:none;
-  background:#1d8cff;
-  color:#fff;
-  box-shadow:0 0 25px rgba(29,140,255,.45);
-}
-
-#btnAbrir{
-  background:#25344d;
-  color:#fff;
-}
-
-#status{
-  margin-top:18px;
-  font-size:14px;
-  color:#9fb6d7;
-}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#050b14;font-family:'Segoe UI',Arial,sans-serif;}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:none;display:none;}
+#installScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#050b14,#07111f);z-index:99999;padding:24px;box-sizing:border-box;}
+.card{width:100%;max-width:520px;background:#07111f;border:2px solid #1d8cff;border-radius:24px;padding:34px 28px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.6);}
+.logo{max-width:210px;margin-bottom:24px;}
+h1{color:#fff;font-size:32px;margin:0 0 14px;font-weight:900;}
+p{color:#bfd9ff;font-size:18px;line-height:1.6;margin:0 0 22px;}
+.lista{display:inline-block;text-align:left;color:#fff;font-size:18px;line-height:2;margin:18px 0 26px;}
+button{width:100%;padding:17px;border:none;border-radius:14px;cursor:pointer;font-size:19px;font-weight:900;margin-top:12px;}
+#btnInstall{display:none;background:#1d8cff;color:#fff;box-shadow:0 0 25px rgba(29,140,255,.45);}
+#btnAbrir{background:#25344d;color:#fff;}
+#status{margin-top:18px;font-size:14px;color:#9fb6d7;}
 </style>
 </head>
 
 <body>
-
-<div id="splashScreen">
-  <video id="splashVideo" src="/splash.mp4" muted playsinline preload="auto"></video>
-</div>
 
 <div id="installScreen">
   <div class="card">
@@ -164,10 +55,13 @@ const frame = document.getElementById("site");
 const btnInstall = document.getElementById("btnInstall");
 const btnAbrir = document.getElementById("btnAbrir");
 const statusBox = document.getElementById("status");
-const splash = document.getElementById("splashScreen");
-const video = document.getElementById("splashVideo");
 
 let deferredPrompt = null;
+
+function abrirLoja(){
+  tela.style.display = "none";
+  frame.style.display = "block";
+}
 
 function estaNoApp(){
   return (
@@ -177,48 +71,17 @@ function estaNoApp(){
   );
 }
 
-function abrirLoja(){
-  tela.style.display = "none";
-  splash.style.display = "none";
-  frame.style.display = "block";
-}
-
-function abrirComSplash(){
-  tela.style.display = "none";
-  frame.style.display = "block";
-  splash.style.display = "flex";
-
-  video.currentTime = 0;
-  video.muted = true;
-
-  const finalizar = function(){
-    splash.style.opacity = "0";
-    setTimeout(function(){
-      splash.style.display = "none";
-      splash.style.opacity = "1";
-    }, 600);
-  };
-
-  video.play().catch(function(){
-    setTimeout(finalizar, 2500);
-  });
-
-  video.onended = finalizar;
-
-  setTimeout(finalizar, 4200);
-}
-
-/* Se abriu pelo app instalado, mostra splash e depois loja */
+/* SE JÁ ABRIU PELO APP INSTALADO, NÃO MOSTRA INSTALAÇÃO */
 if (estaNoApp()) {
-  abrirComSplash();
+  abrirLoja();
 }
 
-/* Service Worker */
+/* SERVICE WORKER */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
 }
 
-/* Instalação Chrome/Edge */
+/* BOTÃO OFICIAL DE INSTALAÇÃO */
 window.addEventListener("beforeinstallprompt", function(e){
   e.preventDefault();
   deferredPrompt = e;
@@ -226,21 +89,9 @@ window.addEventListener("beforeinstallprompt", function(e){
   statusBox.innerHTML = "Clique em Instalar Aplicativo para continuar.";
 });
 
-let deferredPrompt = null;
-
-window.addEventListener("beforeinstallprompt", function(e){
-  e.preventDefault();
-  deferredPrompt = e;
-
-  btnInstall.style.display = "block";
-  btnInstall.disabled = false;
-  statusBox.innerHTML = "Pronto para instalar. Clique no botão abaixo.";
-});
-
 btnInstall.addEventListener("click", async function(){
-
   if (!deferredPrompt) {
-    statusBox.innerHTML = "Instalação ainda não liberada. Atualize a página ou use Chrome/Edge.";
+    alert("A instalação ainda não está disponível. Use Google Chrome ou Microsoft Edge.");
     return;
   }
 
@@ -250,20 +101,18 @@ btnInstall.addEventListener("click", async function(){
 
   if (escolha.outcome === "accepted") {
     statusBox.innerHTML = "Aplicativo instalado com sucesso!";
-    setTimeout(abrirComSplash, 1000);
+    setTimeout(abrirLoja, 1000);
   } else {
     statusBox.innerHTML = "Instalação cancelada.";
   }
 
   deferredPrompt = null;
-  btnInstall.style.display = "none";
-});
 });
 
-btnAbrir.addEventListener("click", abrirComSplash);
+btnAbrir.addEventListener("click", abrirLoja);
 
 window.addEventListener("appinstalled", function(){
-  abrirComSplash();
+  abrirLoja();
 });
 
 setTimeout(function(){

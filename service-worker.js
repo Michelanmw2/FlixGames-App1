@@ -1,16 +1,11 @@
-const CACHE_NAME = 'flixgames-app-v1';
-const FILES_TO_CACHE = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/splash.png'];
-
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE)));
+self.addEventListener("install", function(event) {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null))));
-  self.clients.claim();
+self.addEventListener("activate", function(event) {
+  event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+self.addEventListener("fetch", function(event) {
+  event.respondWith(fetch(event.request));
 });

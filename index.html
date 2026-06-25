@@ -3,111 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>FlixGames App</title>
-
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#050b14">
 
 <style>
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#050b14;
-  font-family:'Segoe UI',Arial,sans-serif;
-}
-
-iframe{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-  display:none;
-}
-
-#installScreen{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,#050b14,#07111f);
-  z-index:99999;
-  padding:24px;
-  box-sizing:border-box;
-}
-
-.card{
-  width:100%;
-  max-width:520px;
-  background:#07111f;
-  border:2px solid #1d8cff;
-  border-radius:24px;
-  padding:34px 28px;
-  text-align:center;
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
-}
-
-.logo{
-  max-width:210px;
-  margin-bottom:24px;
-}
-
-h1{
-  color:#fff;
-  font-size:32px;
-  margin:0 0 14px;
-  font-weight:900;
-}
-
-p{
-  color:#bfd9ff;
-  font-size:18px;
-  line-height:1.6;
-  margin:0 0 22px;
-}
-
-.lista{
-  display:inline-block;
-  text-align:left;
-  color:#fff;
-  font-size:18px;
-  line-height:2;
-  margin:18px 0 26px;
-}
-
-button{
-  width:100%;
-  padding:17px;
-  border:none;
-  border-radius:14px;
-  cursor:pointer;
-  font-size:19px;
-  font-weight:900;
-  margin-top:12px;
-}
-
-#btnInstall{
-  display:none;
-  background:#1d8cff;
-  color:#fff;
-  box-shadow:0 0 25px rgba(29,140,255,.45);
-}
-
-#btnAbrir{
-  background:#25344d;
-  color:#fff;
-}
-
-#status{
-  margin-top:18px;
-  font-size:14px;
-  color:#9fb6d7;
-}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#050b14;font-family:'Segoe UI',Arial,sans-serif;}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:none;display:none;}
+#installScreen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#050b14,#07111f);z-index:99999;padding:24px;box-sizing:border-box;}
+.card{width:100%;max-width:520px;background:#07111f;border:2px solid #1d8cff;border-radius:24px;padding:34px 28px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.6);}
+.logo{max-width:210px;margin-bottom:24px;}
+h1{color:#fff;font-size:32px;margin:0 0 14px;font-weight:900;}
+p{color:#bfd9ff;font-size:18px;line-height:1.6;margin:0 0 22px;}
+.lista{display:inline-block;text-align:left;color:#fff;font-size:18px;line-height:2;margin:18px 0 26px;}
+button{width:100%;padding:17px;border:none;border-radius:14px;cursor:pointer;font-size:19px;font-weight:900;margin-top:12px;}
+#btnInstall{display:none;background:#1d8cff;color:#fff;box-shadow:0 0 25px rgba(29,140,255,.45);}
+#btnAbrir{background:#25344d;color:#fff;}
+#status{margin-top:18px;font-size:14px;color:#9fb6d7;}
 </style>
 </head>
 
@@ -115,14 +27,11 @@ button{
 
 <div id="installScreen">
   <div class="card">
-
     <img class="logo" src="https://cdn.awsli.com.br/2293/2293972/arquivos/logo-tipo-tamanho-ideal-3-.png">
 
     <h1>📥 Instale a FlixGames</h1>
 
-    <p>
-      Use a FlixGames como aplicativo no Windows.
-    </p>
+    <p>Use a FlixGames como aplicativo no Windows.</p>
 
     <div class="lista">
       ✔ Abre mais rápido<br>
@@ -132,11 +41,9 @@ button{
     </div>
 
     <button id="btnInstall">📥 Instalar Aplicativo</button>
-
     <button id="btnAbrir">🚀 Abrir sem instalar</button>
 
     <div id="status">Verificando instalação...</div>
-
   </div>
 </div>
 
@@ -151,9 +58,6 @@ const statusBox = document.getElementById("status");
 
 let deferredPrompt = null;
 
-const params = new URLSearchParams(window.location.search);
-const modoInstalar = params.get("install") === "1";
-
 function abrirLoja(){
   tela.style.display = "none";
   frame.style.display = "block";
@@ -163,33 +67,29 @@ function estaNoApp(){
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
     window.matchMedia("(display-mode: window-controls-overlay)").matches ||
-    window.navigator.standalone
+    window.navigator.standalone === true
   );
 }
 
-/* Se já estiver dentro do app instalado, não mostra aviso */
+/* SE JÁ ABRIU PELO APP INSTALADO, NÃO MOSTRA INSTALAÇÃO */
 if (estaNoApp()) {
   abrirLoja();
 }
 
-/* Service Worker */
+/* SERVICE WORKER */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
 }
 
-/* Captura instalação oficial Chrome/Edge */
+/* BOTÃO OFICIAL DE INSTALAÇÃO */
 window.addEventListener("beforeinstallprompt", function(e){
   e.preventDefault();
-
   deferredPrompt = e;
-
   btnInstall.style.display = "block";
   statusBox.innerHTML = "Clique em Instalar Aplicativo para continuar.";
 });
 
-/* Botão instalar */
 btnInstall.addEventListener("click", async function(){
-
   if (!deferredPrompt) {
     alert("A instalação ainda não está disponível. Use Google Chrome ou Microsoft Edge.");
     return;
@@ -201,43 +101,22 @@ btnInstall.addEventListener("click", async function(){
 
   if (escolha.outcome === "accepted") {
     statusBox.innerHTML = "Aplicativo instalado com sucesso!";
-    localStorage.setItem("flixAppInstalado", "1");
-
-    setTimeout(function(){
-      abrirLoja();
-    }, 1200);
+    setTimeout(abrirLoja, 1000);
   } else {
-    statusBox.innerHTML = "Instalação cancelada. Você pode tentar novamente pelo ícone de instalação do navegador.";
+    statusBox.innerHTML = "Instalação cancelada.";
   }
 
   deferredPrompt = null;
 });
 
-/* Abrir sem instalar */
-btnAbrir.addEventListener("click", function(){
+btnAbrir.addEventListener("click", abrirLoja);
+
+window.addEventListener("appinstalled", function(){
   abrirLoja();
 });
 
-/* Evento após instalação */
-window.addEventListener("appinstalled", function(){
-
-    localStorage.setItem("flixAppInstalado","1");
-
-    /* grava um cookie por 10 anos */
-    document.cookie = "flixAppInstalado=1; max-age=315360000; path=/";
-
-    abrirLoja();
-
-});
-
-/* Se veio do botão do site, mantém tela de instalação */
-if (modoInstalar) {
-  statusBox.innerHTML = "Aguarde o botão de instalação aparecer...";
-}
-
-/* Se não veio para instalar e não estiver instalado, mantém tela normal */
 setTimeout(function(){
-  if (!deferredPrompt && btnInstall.style.display === "none") {
+  if (!estaNoApp() && !deferredPrompt && btnInstall.style.display === "none") {
     statusBox.innerHTML = "Se o botão não aparecer, instale pelo ícone na barra do Chrome ou Edge.";
   }
 }, 5000);

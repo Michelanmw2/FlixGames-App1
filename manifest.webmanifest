@@ -1,12 +1,12 @@
 {
   "name": "FlixGames",
   "short_name": "FlixGames",
-  "start_url": "/?install=1",
+  "description": "Aplicativo oficial FlixGames",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#050b14",
   "theme_color": "#050b14",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "/icon-192.png",

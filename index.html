@@ -226,13 +226,26 @@ window.addEventListener("beforeinstallprompt", function(e){
   statusBox.innerHTML = "Clique em Instalar Aplicativo para continuar.";
 });
 
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+
+  btnInstall.style.display = "block";
+  btnInstall.disabled = false;
+  statusBox.innerHTML = "Pronto para instalar. Clique no botão abaixo.";
+});
+
 btnInstall.addEventListener("click", async function(){
+
   if (!deferredPrompt) {
-    alert("A instalação ainda não está disponível. Use Google Chrome ou Microsoft Edge.");
+    statusBox.innerHTML = "Instalação ainda não liberada. Atualize a página ou use Chrome/Edge.";
     return;
   }
 
   deferredPrompt.prompt();
+
   const escolha = await deferredPrompt.userChoice;
 
   if (escolha.outcome === "accepted") {
@@ -243,6 +256,8 @@ btnInstall.addEventListener("click", async function(){
   }
 
   deferredPrompt = null;
+  btnInstall.style.display = "none";
+});
 });
 
 btnAbrir.addEventListener("click", abrirComSplash);

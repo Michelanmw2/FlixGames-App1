@@ -91,7 +91,76 @@ function estaNoApp(){
 }
 
 if (estaNoApp()) {
-  abrirLoja();
+
+    enviarEvento("app_ja_instalado", {
+        app_name: "FlixGames PWA"
+    });
+
+    document.querySelector("h1").innerHTML = "🎮 FlixGames";
+
+    document.querySelector("p").innerHTML =
+        "Aplicativo já instalado.<br><strong>Carregando...</strong>";
+
+    document.querySelector(".lista").innerHTML = `
+        ✔ Sincronizando biblioteca<br>
+        ✔ Verificando atualizações<br>
+        ✔ Preparando seus jogos
+    `;
+
+    btnInstall.style.display = "none";
+    btnAbrir.style.display = "none";
+
+    statusBox.innerHTML = `
+        <div style="margin-top:25px">
+
+            <div style="
+                width:100%;
+                height:10px;
+                background:#1b2738;
+                border-radius:30px;
+                overflow:hidden;
+            ">
+
+                <div id="progressBar" style="
+                    width:0%;
+                    height:100%;
+                    background:linear-gradient(90deg,#00b7ff,#1d8cff,#00e0ff);
+                    border-radius:30px;
+                "></div>
+
+            </div>
+
+            <div style="
+                margin-top:15px;
+                color:#9fc7ff;
+                font-size:14px;
+            ">
+                Abrindo aplicativo...
+            </div>
+
+        </div>
+    `;
+
+    let progresso = 0;
+
+    const barra = document.getElementById("progressBar");
+
+    const timer = setInterval(function(){
+
+        progresso += 2;
+
+        barra.style.width = progresso + "%";
+
+        if(progresso >= 100){
+
+            clearInterval(timer);
+
+            abrirLoja();
+
+        }
+
+    },40);
+
 }
 
 if ("serviceWorker" in navigator) {
